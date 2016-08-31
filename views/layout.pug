@@ -1,0 +1,26 @@
+html
+head
+	title DQM
+	link(rel='stylesheet', type='text/css', href='/style.css')
+	script(type='text/javascript', src='https://code.jquery.com/jquery-3.1.0.min.js')
+	script(type='text/javascript', src='https://cdn.socket.io/socket.io-1.4.5.js')
+	script(type='text/javascript', src='https://cdn.plot.ly/plotly-1.16.3.min.js')
+	block moreScripts
+body
+	font#connected(color='blue', style='display: none')
+		b CONNECTED
+	font#notConnected(color='red', style='display: none')
+		b='NOT CONNECTED'
+	br
+	br
+	a(href='/') 
+		| home 
+	| #{''} 
+	block caloLinks
+		- var n = 1
+		while n < nCalos+ 1
+			a(href='/calo'+n)
+				| calo #{n++}
+			|#{''}    
+		br
+	block contents

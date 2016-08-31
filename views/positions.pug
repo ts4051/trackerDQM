@@ -1,0 +1,22 @@
+extends ./layout
+block caloLinks
+	- var n = 1
+	while n < nCalos+ 1
+		a(href='/calo'+n)
+			| calo #{n++}
+			|#{''}    
+	br
+block moreScripts
+	script(type='text/javascript', src='/scripts/positions.js')
+block contents
+	br
+	center 
+		h1 hit positions
+	br
+	center 
+		|RUN 
+		b#runNum
+		|#{''} EVENT 
+		b#eventNum
+	br
+	div#positionPlot(style="width: 60em; height: 40em")

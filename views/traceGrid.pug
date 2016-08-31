@@ -1,0 +1,43 @@
+extends ./layout
+
+block moreScripts
+	script(type='text/javascript', src='/scripts/traceGrid.js')
+block caloLinks
+	- var n = 1
+	while n < nCalos+ 1
+		a(href='/traces'+n)
+			| calo #{n++}
+		|#{''}    
+	br
+block contents
+	center 
+		h1 calo 
+			calonum #{caloNum} 
+			| traces
+		a(href='/calo'+caloNum)
+			|summary 
+		a(href='/traces'+caloNum)
+			|traces   
+		a(href='/q'+caloNum)
+			|q hist
+	br
+	center
+		button#update(style='font-size : 20px') update
+		font(style='font-size : 20 px') 
+		button#islandType(style='font-size : 20px') toggle island type
+		br
+		br
+		font#iTypeString(color='blue')
+			|sync 
+		|pulse island, run number  
+		b#runNum
+		|#{''} event number  
+		b#eventNum
+	br
+	div.clear
+	div.container
+		div#singleTrace.traceContainer
+		div#traceContainer.traceContainer
+	div.clear
+	div.container
+		div#maxXtal.traceContainer

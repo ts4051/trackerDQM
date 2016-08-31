@@ -1,0 +1,27 @@
+.container {
+	width: 80em;
+	margin: auto;
+}
+.traceContainer {
+	width: 37em;
+	height: 20em;
+	float: left;
+	margin: auto;
+}
+.plot {
+	width: 37em;
+	float: left;
+	height: 20em;
+}
+.tracePlot {
+	width: 4em;
+	float: left;
+	height: 4em;
+}
+.nofloatplot {
+	width: 40em;
+	height: 20em;
+}
+.clear {
+	clear: both;
+}

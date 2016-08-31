@@ -1,0 +1,31 @@
+extends ./layout
+block caloLinks
+	- var n = 1
+	while n < nCalos+ 1
+		a(href='/q'+n)
+			| calo #{n++}
+			|#{''}    
+	br
+block moreScripts
+	script(type='text/javascript', src='/scripts/qplot.js')
+block contents
+	br
+	center 
+		h1 calo 
+			calonum #{caloNum} 
+			| Q histogram
+		a(href='/calo'+caloNum)
+			|summary 
+		a(href='/traces'+caloNum)
+			|traces   
+		a(href='/q'+caloNum)
+			|q hist
+	br
+	center
+		button#update(style='font-size : 20px') update
+	div#qPlot.container(style='height: 25em;')
+	div.clear
+	center
+		button#clear(style='font-size : 20px') clear
+	div#qBank.container(style='height: 25em;')
+	div.clear
