@@ -116,6 +116,7 @@ subSock.subscribe('');
 // hists and histories
 var Deque = require('collections/deque');
 var eventNumsDeque = new Deque();
+var unpackingSuccessDeque = new Deque();
 var numUnpackingErrorsDeque = new Deque();
 var counter = 0;
 
@@ -134,13 +135,15 @@ timesHist.clear();
 var caloIslandData = null;
 var unpackingData = null;
 
-function handleNumUnpackingErrors(messageInfo) {
+function handleUnpackerInfo(messageInfo) {
+
     counter++;
 
     //Clear deques at new run
     if ( messageInfo.run !== currentRunNum ) {
       currentRunNum = messageInfo.run;
       console.log('New run');
+      unpackingSuccessDeque.clear();
       eventNumsDeque.clear();
       numUnpackingErrorsDeque.clear();
     }
@@ -161,7 +164,10 @@ function handleNumUnpackingErrors(messageInfo) {
     //console.log('Emitting run/event num');
 //    var energySum = 0;
     var numValues = messageInfo.data.length; //TODO Check one value only
-    var numUnpackingErrors = messageInfo.data.readUInt32LE(0);
+    var unpackingSuccess = messageInfo.data.readUInt32LE(0);
+    var numUnpackingErrors = messageInfo.data.readUInt32LE(4); //Each unsigned int is 4 bits
+
+    console.log('called handleUnpackerInfo')
 /*
     var caloNums = new Array(numValues);
     var lastNumIslands = new Array(numValues);
@@ -174,62 +180,41 @@ function handleNumUnpackingErrors(messageInfo) {
         energySum += thisValue;
     }
 */
+
+    var historyLength = 1000
+
     // Update deques
     eventNumsDeque.push(messageInfo.event);
-    if (eventNumsDeque.length > 100) { //TODO 100 -> a maxEventsToShow var
+    if (eventNumsDeque.length > historyLength) {
         eventNumsDeque.shift();
     }
 
+    if ( messageInfo.event % 2 == 0 ) {
+      unpackingSuccess = 0;
+    }
+
+    unpackingSuccessDeque.push(unpackingSuccess);
+    if (unpackingSuccessDeque.length > historyLength) {
+        unpackingSuccessDeque.shift();
+    }
+
     numUnpackingErrorsDeque.push(numUnpackingErrors);
-    if (numUnpackingErrorsDeque.length > 100) { //TODO 100 -> a maxEventsToShow var
+    if (numUnpackingErrorsDeque.length > historyLength) {
         numUnpackingErrorsDeque.shift();
     }
 
     //Fill data struct
     unpackingData = {
       eventNums: eventNumsDeque.toArray(),
+      unpackingSuccessVals: unpackingSuccessDeque.toArray(),
       numUnpackingErrors: numUnpackingErrorsDeque.toArray()
     }
 
 }
 
 
-/*
-// temporary hist structure to see if plot can work
-var posXBins = new Array(90);
-posXBins.fill(0);
-var xBinCenters = [];
-for (var i = 0; i < posXBins.length; ++i) {
-    xBinCenters.push(i / 10.0 + 0.05);
-}
-var posYBins = new Array(60);
-posYBins.fill(0);
-var yBinCenters = [];
-for (var i = 0; i < posYBins.length; ++i) {
-    yBinCenters.push(i / 10.0 + 0.05);
-}
-var posZBins = [];
-for (var rowIndex = 0; rowIndex < posYBins.length; ++rowIndex) {
-    posZBins.push([]);
-    for (var colIndex = 0; colIndex < posXBins.length; ++colIndex) {
-        posZBins[posZBins.length - 1].push(0);
-    }
-}
-
-function handlePosMessage(messageInfo) {
-    var x = messageInfo.data.readDoubleLE(0);
-    var y = messageInfo.data.readDoubleLE(8);
-    var xIndex = Math.floor(x * 10);
-    var yIndex = Math.floor(y * 10);
-
-    posXBins[xIndex] += 1;
-    posYBins[yIndex] += 1;
-    posZBins[yIndex][xIndex] += 1;
-}
-*/
-
 var subCallbacks = {
-    'NumUnpackingErrors': handleNumUnpackingErrors //,
+    'UnpackerInfo': handleUnpackerInfo //,
     //'nXtals': function(msgInfo) { updateNCalosandXtals(msgInfo.data); }
 };
 
@@ -250,16 +235,6 @@ io.on('connection', function(ioSocket) {
     } else {
         ioSocket.emit('not connected');
     }
-
-/*
-    ioSocket.on('clear time hist', function() { timesHist.clear(); });
-
-    ioSocket.on('nXtals?', function(caloNum) {
-        if (nXtalsArray !== null) {
-            ioSocket.emit('nXtals', nXtalsArray[caloNum - 1]);
-        }
-    });
-*/
 
     ioSocket.on('overview plots', function() {
         if (unpackingData !== null) {

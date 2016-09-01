@@ -1,11 +1,11 @@
 extends ./layout
 
 block moreScripts
-	script(type='text/javascript', src='/scripts/plots.js')
+	script(type='text/javascript', src='/scripts/overview.js')
 
 block contents
 	center 
-		h1 overview
+		h1 Tracker Test Stand Summary
 	br
 	center 
 		|RUN 
@@ -13,7 +13,7 @@ block contents
 		|#{''} EVENT 
 		b#eventNum
 	div#container.container
-		div#tom.plot
-		div#myDiv.plot
+		div#unpackingSuccess.plot
+		div#numUnpackingErrors.plot
 		div.clear
 
