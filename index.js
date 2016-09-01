@@ -192,6 +192,22 @@ var M0V1HitChannelsHist = new HistRecord();
 M0V1HitChannelsHist.bins.length = 32;
 M0V1HitChannelsHist.clear();
 
+var M1U0HitChannelsHist = new HistRecord();
+M1U0HitChannelsHist.bins.length = 32;
+M1U0HitChannelsHist.clear();
+
+var M1U1HitChannelsHist = new HistRecord();
+M1U1HitChannelsHist.bins.length = 32;
+M1U1HitChannelsHist.clear();
+
+var M1V0HitChannelsHist = new HistRecord();
+M1V0HitChannelsHist.bins.length = 32;
+M1V0HitChannelsHist.clear();
+
+var M1V1HitChannelsHist = new HistRecord();
+M1V1HitChannelsHist.bins.length = 32;
+M1V1HitChannelsHist.clear();
+
 function handleM0U0HitChannelsMessage(messageInfo) {
     M0U0HitChannelsHist.fill(messageInfo, 'uint32');
 }
@@ -206,6 +222,22 @@ function handleM0V0HitChannelsMessage(messageInfo) {
 
 function handleM0V1HitChannelsMessage(messageInfo) {
     M0V1HitChannelsHist.fill(messageInfo, 'uint32');
+}
+
+function handleM1U0HitChannelsMessage(messageInfo) {
+    M1U0HitChannelsHist.fill(messageInfo, 'uint32');
+}
+
+function handleM1U1HitChannelsMessage(messageInfo) {
+    M1U1HitChannelsHist.fill(messageInfo, 'uint32');
+}
+
+function handleM1V0HitChannelsMessage(messageInfo) {
+    M1V0HitChannelsHist.fill(messageInfo, 'uint32');
+}
+
+function handleM1V1HitChannelsMessage(messageInfo) {
+    M1V1HitChannelsHist.fill(messageInfo, 'uint32');
 }
 
 //
@@ -275,7 +307,11 @@ var subCallbacks = {
     'M0U0HitChannels': handleM0U0HitChannelsMessage,
     'M0U1HitChannels': handleM0U1HitChannelsMessage,
     'M0V0HitChannels': handleM0V0HitChannelsMessage,
-    'M0V1HitChannels': handleM0V1HitChannelsMessage //,
+    'M0V1HitChannels': handleM0V1HitChannelsMessage,
+    'M1U0HitChannels': handleM1U0HitChannelsMessage,
+    'M1U1HitChannels': handleM1U1HitChannelsMessage,
+    'M1V0HitChannels': handleM1V0HitChannelsMessage,
+    'M1V1HitChannels': handleM1V1HitChannelsMessage //,
     //'nXtals': function(msgInfo) { updateNCalosandXtals(msgInfo.data); }
 };
 
@@ -314,6 +350,10 @@ io.on('connection', function(ioSocket) {
         ioSocket.emit('hit channels M0 U1', M0U1HitChannelsHist);
         ioSocket.emit('hit channels M0 V0', M0V0HitChannelsHist);
         ioSocket.emit('hit channels M0 V1', M0V1HitChannelsHist);
+        ioSocket.emit('hit channels M1 U0', M1U0HitChannelsHist);
+        ioSocket.emit('hit channels M1 U1', M1U1HitChannelsHist);
+        ioSocket.emit('hit channels M1 V0', M1V0HitChannelsHist);
+        ioSocket.emit('hit channels M1 V1', M1V1HitChannelsHist);
     });
 
 /*

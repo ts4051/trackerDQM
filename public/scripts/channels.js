@@ -113,6 +113,88 @@ $(document).ready(function() {
 
     });
 
+    //M1 U0
+    Plotly.newPlot(
+      'M1U0HitChannels', 
+      [ { y: [], type: 'bar' } ] ,
+      { 
+        title: "Module 1 U0 Hit Channels",
+        titlefont: { size: 20 },
+        xaxis: { title: 'Wire', titlefont: { size: 15 } },
+        yaxis: { title: 'Counts', titlefont: { size: 15 } }
+      }
+    );
+
+    //Update plots when receive new data
+    socket.on('hit channels M1 U0', function(data) {
+
+        Plotly.deleteTraces(M1U0HitChannels, 0);
+        Plotly.addTraces(M1U0HitChannels, { y: data.bins, marker: { color: 'black' }, type: 'bar' });
+
+    });
+
+    //M1 U1
+    Plotly.newPlot(
+      'M1U1HitChannels', 
+      [ { y: [], type: 'bar' } ] ,
+      { 
+        title: "Module 1 U1 Hit Channels",
+        titlefont: { size: 20 },
+        xaxis: { title: 'Wire', titlefont: { size: 15 } },
+        yaxis: { title: 'Counts', titlefont: { size: 15 } }
+      }
+    );
+
+    //Update plots when receive new data
+    socket.on('hit channels M1 U1', function(data) {
+
+        Plotly.deleteTraces(M1U1HitChannels, 0);
+        Plotly.addTraces(M1U1HitChannels, { y: data.bins, marker: { color: 'black' }, type: 'bar' });
+
+    });
+
+
+    //M1 V0
+    Plotly.newPlot(
+      'M1V0HitChannels', 
+      [ { y: [], type: 'bar' } ] ,
+      { 
+        title: "Module 1 V0 Hit Channels",
+        titlefont: { size: 20 },
+        xaxis: { title: 'Wire', titlefont: { size: 15 } },
+        yaxis: { title: 'Counts', titlefont: { size: 15 } }
+      }
+    );
+
+    //Update plots when receive new data
+    socket.on('hit channels M1 V0', function(data) {
+
+        Plotly.deleteTraces(M1V0HitChannels, 0);
+        Plotly.addTraces(M1V0HitChannels, { y: data.bins, marker: { color: 'black' }, type: 'bar' });
+
+    });
+
+
+    //M1 V1
+    Plotly.newPlot(
+      'M1V1HitChannels', 
+      [ { y: [], type: 'bar' } ] ,
+      { 
+        title: "Module 1 V1 Hit Channels",
+        titlefont: { size: 20 },
+        xaxis: { title: 'Wire', titlefont: { size: 15 } },
+        yaxis: { title: 'Counts', titlefont: { size: 15 } }
+      }
+    );
+
+    //Update plots when receive new data
+    socket.on('hit channels M1 V1', function(data) {
+
+        Plotly.deleteTraces(M1V1HitChannels, 0);
+        Plotly.addTraces(M1V1HitChannels, { y: data.bins, marker: { color: 'black' }, type: 'bar' });
+
+    });
+
 
     //
     // Update loop
