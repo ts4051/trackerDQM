@@ -1,0 +1,23 @@
+extends ./layout
+
+block moreScripts
+	script(type='text/javascript', src='/scripts/channels.js')
+
+block contents
+	center 
+		h1 Tracker Test Stand Hit Channels
+	br
+	center 
+		|RUN 
+		b#runNum
+		|#{''} EVENT 
+		b#eventNum
+	div#container.container
+		div#M0U0HitChannels.plot
+		div#M0U1HitChannels.plot
+		div.clear
+	div#container.container
+		div#M0V0HitChannels.plot
+		div#M0V1HitChannels.plot
+		div.clear
+

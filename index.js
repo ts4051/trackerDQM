@@ -30,6 +30,7 @@ var io = require('socket.io')(http);
 var zmq = require('zmq');
 
 //pull in helper classes
+var Deque = require('collections/deque');
 var helperClasses = require('./helperClasses.js');
 var RunningAvgRecord = helperClasses.RunningAvgRecord;
 var HistRecord = helperClasses.HistRecord;
@@ -110,34 +111,22 @@ subSock.subscribe('');
 
 
 //
-// Published data handling
+// Handle "UnpackerInfo" message
 //
 
 // hists and histories
-var Deque = require('collections/deque');
 var eventNumsDeque = new Deque();
 var unpackingSuccessDeque = new Deque();
 var numUnpackingErrorsDeque = new Deque();
-var counter = 0;
 
-// just make this large enough to hold more calos than we'll ever need for now
-var lastTenIslands = new Array(50);
-for (var i = 0; i < lastTenIslands.length; ++i) {
-    // last 10, running avg
-    lastTenIslands[i] = new RunningAvgRecord(10);
-}
-
-var timesHist = new HistRecord();
-timesHist.bins.length = 200;
-timesHist.clear();
-
-// functions for handling messages coming in on subscribe socket]
-var caloIslandData = null;
 var unpackingData = null;
 
-function handleUnpackerInfo(messageInfo) {
 
-    counter++;
+function handleUnpackerInfoMessage(messageInfo) {
+
+    //console.log('called handleUnpackerInfoMessage')
+
+    var historyLength = 1000 //TODO User can modify //TODO Clear button
 
     //Clear deques at new run
     if ( messageInfo.run !== currentRunNum ) {
@@ -148,49 +137,18 @@ function handleUnpackerInfo(messageInfo) {
       numUnpackingErrorsDeque.clear();
     }
 
-    //nFills += 1; //TODO Move to something generic
-
     // let all clients know current event and run number //TODO Move to something generic
-    io.emit('run&event', { run: messageInfo.run, event: messageInfo.event });
-/*
-        // unpack data buffer and add to histgram bins
-        var numBins = messageInfo.data.length / 4;
-        for (var i = 0; i < numBins; ++i) {
-            binContents[i] += messageInfo.data.readUInt32LE(4 * i);
-        }
-        io.emit('time hist', {y: binContents, nFills: nFills });
-*/
+    //nFills += 1; //TODO Move to something generic
     io.emit('e num', { 'run': messageInfo.run, 'event': messageInfo.event });
-    //console.log('Emitting run/event num');
-//    var energySum = 0;
-    var numValues = messageInfo.data.length; //TODO Check one value only
+
+    //Unpack message
     var unpackingSuccess = messageInfo.data.readUInt32LE(0);
     var numUnpackingErrors = messageInfo.data.readUInt32LE(4); //Each unsigned int is 4 bits
 
-    console.log('called handleUnpackerInfo')
-/*
-    var caloNums = new Array(numValues);
-    var lastNumIslands = new Array(numValues);
-    var runningAvgs = new Array(numValues);
-    for (var i = 0; i < numValues; ++i) {
-        var thisValue = messageInfo.data.readUInt32LE(4 * i);
-        caloNums[i] = i + 1;
-        lastNumIslands[i] = thisValue;
-        runningAvgs[i] = lastTenIslands[i].addValue(thisValue);
-        energySum += thisValue;
-    }
-*/
-
-    var historyLength = 1000
-
-    // Update deques
+    //Update deques (using deque to only keep most recent N events, otherwise memory usage increases over time)
     eventNumsDeque.push(messageInfo.event);
     if (eventNumsDeque.length > historyLength) {
         eventNumsDeque.shift();
-    }
-
-    if ( messageInfo.event % 2 == 0 ) {
-      unpackingSuccess = 0;
     }
 
     unpackingSuccessDeque.push(unpackingSuccess);
@@ -213,8 +171,111 @@ function handleUnpackerInfo(messageInfo) {
 }
 
 
+
+//
+// Hit channels histo message handling
+//
+
+var M0U0HitChannelsHist = new HistRecord();
+M0U0HitChannelsHist.bins.length = 32;
+M0U0HitChannelsHist.clear();
+
+var M0U1HitChannelsHist = new HistRecord();
+M0U1HitChannelsHist.bins.length = 32;
+M0U1HitChannelsHist.clear();
+
+var M0V0HitChannelsHist = new HistRecord();
+M0V0HitChannelsHist.bins.length = 32;
+M0V0HitChannelsHist.clear();
+
+var M0V1HitChannelsHist = new HistRecord();
+M0V1HitChannelsHist.bins.length = 32;
+M0V1HitChannelsHist.clear();
+
+function handleM0U0HitChannelsMessage(messageInfo) {
+    M0U0HitChannelsHist.fill(messageInfo, 'uint32');
+}
+
+function handleM0U1HitChannelsMessage(messageInfo) {
+    M0U1HitChannelsHist.fill(messageInfo, 'uint32');
+}
+
+function handleM0V0HitChannelsMessage(messageInfo) {
+    M0V0HitChannelsHist.fill(messageInfo, 'uint32');
+}
+
+function handleM0V1HitChannelsMessage(messageInfo) {
+    M0V1HitChannelsHist.fill(messageInfo, 'uint32');
+}
+
+//
+// Handle "StrawHitChannel" message
+//
+
+var positionData = null; //TODO Change name from "position" to "hitChannel"
+
+/*
+
+//TODO Turn into an external helper function/class
+var posXBins = new Array(32);
+posXBins.fill(0);
+var xBinCenters = [];
+for (var i = 0; i < posXBins.length; ++i) {
+    xBinCenters.push(i / 10.0 + 0.05);
+}
+var posYBins = new Array(60);
+posYBins.fill(0);
+var yBinCenters = [];
+for (var i = 0; i < posYBins.length; ++i) {
+    yBinCenters.push(i / 10.0 + 0.05);
+}
+var posZBins = [];
+for (var rowIndex = 0; rowIndex < posYBins.length; ++rowIndex) {
+    posZBins.push([]);
+    for (var colIndex = 0; colIndex < posXBins.length; ++colIndex) {
+        posZBins[posZBins.length - 1].push(0);
+    }
+}
+
+*/
+function handleStrawHitChannelMessage(messageInfo) {
+
+    //console.log('called handleStrawHitChannelMessage')
+
+    //Clear at new run
+    //TODO
+
+    //Unpack message
+    var station = messageInfo.data.readUInt32LE(0);
+    var module = messageInfo.data.readUInt32LE(4); //Each unsigned int is 4 bits
+    var globalModule = messageInfo.data.readUInt32LE(8);
+    var view = messageInfo.data.readUInt32LE(12);
+    var globalView = messageInfo.data.readUInt32LE(16);
+    var layer = messageInfo.data.readUInt32LE(20);
+    var globalLayer = messageInfo.data.readUInt32LE(24);
+    var wire = messageInfo.data.readUInt32LE(28);
+    var globalView = messageInfo.data.readUInt32LE(32);
+
+    //Fill data struct
+    positionData = {
+      wire: wire,
+      globalLayer: globalLayer
+    }
+
+}
+
+
+//
+// Define callbacks
+//
+
 var subCallbacks = {
-    'UnpackerInfo': handleUnpackerInfo //,
+    'UnpackerInfo': handleUnpackerInfoMessage,
+    'StrawHitChannel': handleStrawHitChannelMessage,
+    'M0U0HitChannels': handleM0U0HitChannelsMessage,
+    'M0U1HitChannels': handleM0U1HitChannelsMessage,
+    'M0V0HitChannels': handleM0V0HitChannelsMessage,
+    'M0V1HitChannels': handleM0V1HitChannelsMessage //,
     //'nXtals': function(msgInfo) { updateNCalosandXtals(msgInfo.data); }
 };
 
@@ -241,6 +302,20 @@ io.on('connection', function(ioSocket) {
           ioSocket.emit('unpacking data', unpackingData);
         }
     });
+
+    ioSocket.on('position plots', function() {
+        if (positionData !== null) {
+          ioSocket.emit('position data', positionData);
+        }
+    });
+
+    ioSocket.on('channels plots', function() {
+        ioSocket.emit('hit channels M0 U0', M0U0HitChannelsHist); //TODO Only if changed?
+        ioSocket.emit('hit channels M0 U1', M0U1HitChannelsHist);
+        ioSocket.emit('hit channels M0 V0', M0V0HitChannelsHist);
+        ioSocket.emit('hit channels M0 V1', M0V1HitChannelsHist);
+    });
+
 /*
     ioSocket.on('position plots', function() {
         ioSocket.emit('position plots', {
@@ -258,16 +333,26 @@ io.on('connection', function(ioSocket) {
     });
 });
 
-//Choose top-level page
+
+//
+// Define public pages
+//
+
+//Choose top-level page (summary/overview page)
 app.get('/', function(req, res) {
-    res.render('overview', { nCalos: nCalos }); //TODO nCalos?
+    res.render('overview');
 });
 
-/*
 app.get('/positions', function(req, res) {
-    res.render('positions', {nCalos: nCalos});
+    res.render('positions', 
+      { numTrackers: 1,
+        numModulesPerTracker: 1 }
+    );
 });
-*/
+
+app.get('/channels', function(req, res) {
+    res.render('channels');
+});
 
 //
 // Start webserver

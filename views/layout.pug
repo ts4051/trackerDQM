@@ -18,11 +18,7 @@ body
 	a(href='/') 
 		| home 
 	| #{''} 
-	block caloLinks
-		- var n = 1
-		while n < nCalos+ 1
-			a(href='/calo'+n)
-				| calo #{n++}
-			|#{''}    
-		br
+	a(href='/channels') 
+		| channels 
+	| #{''} 
 	block contents

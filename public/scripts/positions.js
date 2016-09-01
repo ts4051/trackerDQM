@@ -57,12 +57,12 @@ $(document).ready(function() {
         xaxis: { title: 'column number', titlefont: { size: 20 }, domain: [0, 0.85], showgrid: true },
         yaxis: { title: 'row number', titlefont: { size: 20 }, domain: [0, 0.85], showgrid: true },
         xaxis2: { domain: [0.85, 1], showgrid: false, showticklabels: false },
-        yaxis2: { domain: [0.85, 1], showgrid: false, showticklabels: false },
+        yaxis2: { domain: [0.85, 1], showgrid: false, showticklabels: false } /*,
         shapes: [0, 1, 2, 3, 4, 5, 6, 7, 8]
             .map(makeLineVert)
             .concat([0, 1, 2, 3, 4, 5]
                 .map(makeLineHoriz)
-            ),
+            ),*/
     });
 
     socket.on('position plots', function(data) {
