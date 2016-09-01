@@ -25,73 +25,61 @@ $(document).ready(function() {
         socket.emit('overview plots');
     });
 
-    var hitHist = document.getElementById('hist');
-    Plotly.newPlot('hist', [
-        { y: [], type: 'bar' }, { y: [], type: 'bar' }
-    ], {
-        title: 'islands',
+
+    var trace1 = {
+      x: [1, 2, 3, 4],
+      y: [10, 15, 13, 17],
+      type: 'scatter'
+    };
+
+    var trace2 = {
+      x: [1, 2, 3, 4],
+      y: [16, 5, 11, 9],
+      type: 'scatter'
+    };
+
+    var data = [trace1, trace2];
+
+    Plotly.newPlot('myDiv', data);
+
+    var data2 = [trace2, trace1];
+
+
+
+
+
+
+    Plotly.newPlot(
+      'tom', 
+      [ { x: [], y: [], type: 'scatter' } ] ,
+      { 
+        title: "Tom's test plot",
         titlefont: { size: 20 },
-        xaxis: { title: 'calo num', titlefont: { size: 20 } },
-        yaxis: { title: 'num islands', titlefont: { size: 20 }, zeroline: false },
-        legend: { orientation: 'h', font: { size: 15 } }
-    });
-    var linePlot = document.getElementById('line');
-    Plotly.newPlot('line', [
-        { y: [], type: 'line' }
-    ], {
-        title: 'island history',
-        titlefont: { size: 20 },
-        xaxis: { showticklabels: false },
-        yaxis: { title: 'num islands', titlefont: { size: 20 } }
-    });
-    socket.on('calo island data', function(data) {
-        Plotly.deleteTraces(hist, [0, 1]);
-        Plotly.addTraces(hist, [{
-            x: data.caloNums,
-            y: data.lastIslands,
-            type: 'bar',
+        xaxis: { title: 'Event number', titlefont: { size: 10 } },
+        yaxis: { title: 'Num unpacking errors', titlefont: { size: 10 } }
+      }
+    );
+
+    socket.on('unpacking data', function(data) {
+      console.log('"unpacking data" signal received');
+
+        Plotly.deleteTraces(tom, 0);
+        Plotly.addTraces(tom, [{
+            x: data.eventNums,
+            y: data.numUnpackingErrors,
+            type: 'scatter',
             name: 'last event'
-        }, {
-            x: data.caloNums,
-            y: data.lastAvgs,
-            type: 'bar',
-            name: '<last 10 events>'
         }]);
 
-        Plotly.deleteTraces(line, 0);
-        Plotly.addTraces(line, { y: data.history, mode: 'lines' });
+/*
+        Plotly.deleteTraces(tom, 0);
+        Plotly.addTraces(tom, { y: data.numUnpackingErrors, mode: 'lines' });
+*/
     });
 
-    var logScale = false;
-    $('#logScale').click(function() {
-        if (logScale) {
-            logScale = false;
-            $('#logScale').text('log scale');
-        } else {
-            logScale = true;
-            $('#logScale').text('linear scale');
-        }
-    });
 
-    var timeHist = document.getElementById('timesHist');
-    Plotly.newPlot('timesHist', [{ y: [], type: 'bar' }], {
-        title: 'time spectrum',
-        titlefont: { size: 20 },
-        xaxis: { title: 'time [clock ticks / 1000]', titlefont: { size: 20 } },
-        yaxis: { title: 'num islands', titlefont: { size: 20 } }
-    });
-    socket.on('time hist', function(data) {
-        var update;
-        if (!logScale) {
-            update = { title: 'time spectrum, ' + data.nFills.toString() + ' fills', yaxis: { type: 'linear' } };
-        } else {
-            update = { title: 'time spectrum, ' + data.nFills.toString() + ' fills', yaxis: { type: 'log' } };
-        }
-        Plotly.relayout(timeHist, update);
 
-        Plotly.deleteTraces(timeHist, 0);
-        Plotly.addTraces(timeHist, { y: data.bins, marker: { color: 'black' }, type: 'bar' });
-    });
+
 
     (function requestPlots() {
         socket.emit('overview plots');

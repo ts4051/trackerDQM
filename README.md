@@ -1,5 +1,16 @@
-# nodeDQM
-*Aaron Fienberg*
+# trackerDQM
 
-Proof of principle for ART-based DQM. 
-This is a node server that communicates with a running art job through zmq sockets and then pushes data to a client using socket.io. Currently plots are made using google charts, but this can be changed quite easily.# trackerDQM
+Install:
+
+git clone
+TODO gcc 
+npm install express --save
+npm install socket.io --save
+npm install zmq --save
+npm install serve-favicon --save
+npm install collection --save
+npm install pug --save
+
+Run:
+
+node index.js

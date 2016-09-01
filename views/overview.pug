@@ -2,6 +2,7 @@ extends ./layout
 
 block moreScripts
 	script(type='text/javascript', src='/scripts/plots.js')
+
 block contents
 	center 
 		h1 overview
@@ -12,13 +13,7 @@ block contents
 		|#{''} EVENT 
 		b#eventNum
 	div#container.container
-		div#hist.plot
-		div#line.plot
+		div#tom.plot
+		div#myDiv.plot
 		div.clear
-	br 
-	button#logScale(style='font-size : 20px') 
-		|log scale
-	div#timesHist.container(style='height: 20em;')
-	div.clear
-	center
-		button#clear(style='font-size : 20px') clear
+
