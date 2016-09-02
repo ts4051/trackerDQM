@@ -12,11 +12,13 @@ exports.HistRecord = function() {
     this.runNum = null;
     this.eventNum = null;
     this.nFills = 0;
+    this.centers = [];
     this.bins = [];
 };
 exports.HistRecord.prototype = {
     clear: function() {
         this.nFills = 0;
+        this.centers.fill(0);
         this.bins.fill(0);
     },
     preFill: function(messageInfo, dtype) {

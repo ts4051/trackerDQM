@@ -171,74 +171,78 @@ function handleUnpackerInfoMessage(messageInfo) {
 }
 
 
+//
+// Hist test TODO REMOVE
+//
+/*
+var histTest = null; 
+
+function handleHistTestMessage(messageInfo) {
+
+  var numBins = messageInfo.data.readUInt32LE(0);
+
+  //Fill data struct
+  histTest = {
+    binCenters: [],
+    binContents: []
+  }
+
+  histTest.binCenters.length = numBins;
+  histTest.binContents.length = numBins;
+
+  console.log( "Data stream length = " + messageInfo.data.length + " : Array length = " + histTest.binCenters.length + " : Num bins = " + numBins  )
+
+  for (var i = 0 ; i < numBins ; ++i) {
+    var index = ( i * 2 ) + 1
+    console.log( "i = " + i + " : First index = " + index + " : Byte index = " + (4 * index) )
+    histTest.binCenters[i] = messageInfo.data.readFloatLE( 4 * index );
+    histTest.binContents[i] = messageInfo.data.readFloatLE( 4 * (index+1) );
+  }
+
+
+}
+*/
 
 //
 // Hit channels histo message handling
 //
 
-var M0U0HitChannelsHist = new HistRecord();
-M0U0HitChannelsHist.bins.length = 32;
-M0U0HitChannelsHist.clear();
+var HitChannelsL0Hist = { binCenters: [], binContents: [] };  //TODO Make class
+var HitChannelsL1Hist = { binCenters: [], binContents: [] };  //TODO Make class
+var HitChannelsL2Hist = { binCenters: [], binContents: [] };  //TODO Make class
+var HitChannelsL3Hist = { binCenters: [], binContents: [] };  //TODO Make class
+var HitChannelsL4Hist = { binCenters: [], binContents: [] };  //TODO Make class
+var HitChannelsL5Hist = { binCenters: [], binContents: [] };  //TODO Make class
+var HitChannelsL6Hist = { binCenters: [], binContents: [] };  //TODO Make class
+var HitChannelsL7Hist = { binCenters: [], binContents: [] };  //TODO Make class
 
-var M0U1HitChannelsHist = new HistRecord();
-M0U1HitChannelsHist.bins.length = 32;
-M0U1HitChannelsHist.clear();
+function unpackTH1F(messageInfo,hist) {
 
-var M0V0HitChannelsHist = new HistRecord();
-M0V0HitChannelsHist.bins.length = 32;
-M0V0HitChannelsHist.clear();
+  var numBins = messageInfo.data.readUInt32LE(0);
 
-var M0V1HitChannelsHist = new HistRecord();
-M0V1HitChannelsHist.bins.length = 32;
-M0V1HitChannelsHist.clear();
+  hist.binCenters.length = numBins;
+  hist.binContents.length = numBins;
 
-var M1U0HitChannelsHist = new HistRecord();
-M1U0HitChannelsHist.bins.length = 32;
-M1U0HitChannelsHist.clear();
+  var binDataSize = 8; //Always a double
+  var contentDataSize = 4; //TH1F, e.g. float
+  var firstBinIndex = 4; //Step past uint first word
+  var firstContentIndex = firstBinIndex + ( numBins * binDataSize );
+  for (var i_bin = 0 ; i_bin < numBins ; ++i_bin) {
+    hist.binCenters[i_bin] = messageInfo.data.readDoubleLE( firstBinIndex + ( i_bin * binDataSize ) );
+    hist.binContents[i_bin] = messageInfo.data.readFloatLE( firstContentIndex + ( i_bin * contentDataSize ) );
+  }
 
-var M1U1HitChannelsHist = new HistRecord();
-M1U1HitChannelsHist.bins.length = 32;
-M1U1HitChannelsHist.clear();
-
-var M1V0HitChannelsHist = new HistRecord();
-M1V0HitChannelsHist.bins.length = 32;
-M1V0HitChannelsHist.clear();
-
-var M1V1HitChannelsHist = new HistRecord();
-M1V1HitChannelsHist.bins.length = 32;
-M1V1HitChannelsHist.clear();
-
-function handleM0U0HitChannelsMessage(messageInfo) {
-    M0U0HitChannelsHist.fill(messageInfo, 'uint32');
 }
 
-function handleM0U1HitChannelsMessage(messageInfo) {
-    M0U1HitChannelsHist.fill(messageInfo, 'uint32');
-}
+function handleHitChannelsL0Message(messageInfo) { unpackTH1F(messageInfo,HitChannelsL0Hist); }
+function handleHitChannelsL1Message(messageInfo) { unpackTH1F(messageInfo,HitChannelsL1Hist); }
+function handleHitChannelsL2Message(messageInfo) { unpackTH1F(messageInfo,HitChannelsL2Hist); }
+function handleHitChannelsL3Message(messageInfo) { unpackTH1F(messageInfo,HitChannelsL3Hist); }
+function handleHitChannelsL4Message(messageInfo) { unpackTH1F(messageInfo,HitChannelsL4Hist); }
+function handleHitChannelsL5Message(messageInfo) { unpackTH1F(messageInfo,HitChannelsL5Hist); }
+function handleHitChannelsL6Message(messageInfo) { unpackTH1F(messageInfo,HitChannelsL6Hist); }
+function handleHitChannelsL7Message(messageInfo) { unpackTH1F(messageInfo,HitChannelsL7Hist); }
 
-function handleM0V0HitChannelsMessage(messageInfo) {
-    M0V0HitChannelsHist.fill(messageInfo, 'uint32');
-}
-
-function handleM0V1HitChannelsMessage(messageInfo) {
-    M0V1HitChannelsHist.fill(messageInfo, 'uint32');
-}
-
-function handleM1U0HitChannelsMessage(messageInfo) {
-    M1U0HitChannelsHist.fill(messageInfo, 'uint32');
-}
-
-function handleM1U1HitChannelsMessage(messageInfo) {
-    M1U1HitChannelsHist.fill(messageInfo, 'uint32');
-}
-
-function handleM1V0HitChannelsMessage(messageInfo) {
-    M1V0HitChannelsHist.fill(messageInfo, 'uint32');
-}
-
-function handleM1V1HitChannelsMessage(messageInfo) {
-    M1V1HitChannelsHist.fill(messageInfo, 'uint32');
-}
 
 //
 // Handle "StrawHitChannel" message
@@ -304,14 +308,14 @@ function handleStrawHitChannelMessage(messageInfo) {
 var subCallbacks = {
     'UnpackerInfo': handleUnpackerInfoMessage,
     'StrawHitChannel': handleStrawHitChannelMessage,
-    'M0U0HitChannels': handleM0U0HitChannelsMessage,
-    'M0U1HitChannels': handleM0U1HitChannelsMessage,
-    'M0V0HitChannels': handleM0V0HitChannelsMessage,
-    'M0V1HitChannels': handleM0V1HitChannelsMessage,
-    'M1U0HitChannels': handleM1U0HitChannelsMessage,
-    'M1U1HitChannels': handleM1U1HitChannelsMessage,
-    'M1V0HitChannels': handleM1V0HitChannelsMessage,
-    'M1V1HitChannels': handleM1V1HitChannelsMessage //,
+    'HitChannelsL0': handleHitChannelsL0Message,
+    'HitChannelsL1': handleHitChannelsL1Message,
+    'HitChannelsL2': handleHitChannelsL2Message,
+    'HitChannelsL3': handleHitChannelsL3Message,
+    'HitChannelsL4': handleHitChannelsL4Message,
+    'HitChannelsL5': handleHitChannelsL5Message,
+    'HitChannelsL6': handleHitChannelsL6Message,
+    'HitChannelsL7': handleHitChannelsL7Message
     //'nXtals': function(msgInfo) { updateNCalosandXtals(msgInfo.data); }
 };
 
@@ -346,14 +350,15 @@ io.on('connection', function(ioSocket) {
     });
 
     ioSocket.on('channels plots', function() {
-        ioSocket.emit('hit channels M0 U0', M0U0HitChannelsHist); //TODO Only if changed?
-        ioSocket.emit('hit channels M0 U1', M0U1HitChannelsHist);
-        ioSocket.emit('hit channels M0 V0', M0V0HitChannelsHist);
-        ioSocket.emit('hit channels M0 V1', M0V1HitChannelsHist);
-        ioSocket.emit('hit channels M1 U0', M1U0HitChannelsHist);
-        ioSocket.emit('hit channels M1 U1', M1U1HitChannelsHist);
-        ioSocket.emit('hit channels M1 V0', M1V0HitChannelsHist);
-        ioSocket.emit('hit channels M1 V1', M1V1HitChannelsHist);
+      //TODO Shouldn't be doing the [global layer] <-> [module,view,layer] mapping here, should send it 
+      if( HitChannelsL0Hist != null ) { ioSocket.emit('hit channels M0 U0', HitChannelsL0Hist); } 
+      if( HitChannelsL1Hist != null ) { ioSocket.emit('hit channels M0 U1', HitChannelsL1Hist); } 
+      if( HitChannelsL2Hist != null ) { ioSocket.emit('hit channels M0 V0', HitChannelsL2Hist); } 
+      if( HitChannelsL3Hist != null ) { ioSocket.emit('hit channels M0 V1', HitChannelsL3Hist); } 
+      if( HitChannelsL4Hist != null ) { ioSocket.emit('hit channels M1 U0', HitChannelsL4Hist); } 
+      if( HitChannelsL5Hist != null ) { ioSocket.emit('hit channels M1 U1', HitChannelsL5Hist); } 
+      if( HitChannelsL6Hist != null ) { ioSocket.emit('hit channels M1 V0', HitChannelsL6Hist); } 
+      if( HitChannelsL7Hist != null ) { ioSocket.emit('hit channels M1 V1', HitChannelsL7Hist); } 
     });
 
 /*

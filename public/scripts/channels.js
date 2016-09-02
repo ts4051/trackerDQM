@@ -47,7 +47,12 @@ $(document).ready(function() {
     socket.on('hit channels M0 U0', function(data) {
 
         Plotly.deleteTraces(M0U0HitChannels, 0);
-        Plotly.addTraces(M0U0HitChannels, { y: data.bins, marker: { color: 'black' }, type: 'bar' });
+        Plotly.addTraces(M0U0HitChannels, { 
+          x: data.binCenters, 
+          y: data.binContents, 
+          marker: { color: 'black' },
+          type: 'bar' }
+        );
 
     });
 
@@ -67,7 +72,12 @@ $(document).ready(function() {
     socket.on('hit channels M0 U1', function(data) {
 
         Plotly.deleteTraces(M0U1HitChannels, 0);
-        Plotly.addTraces(M0U1HitChannels, { y: data.bins, marker: { color: 'black' }, type: 'bar' });
+        Plotly.addTraces(M0U1HitChannels, {
+          x: data.binCenters, 
+          y: data.binContents, 
+          marker: { color: 'black' },
+          type: 'bar' }
+        );
 
     });
 
@@ -88,7 +98,12 @@ $(document).ready(function() {
     socket.on('hit channels M0 V0', function(data) {
 
         Plotly.deleteTraces(M0V0HitChannels, 0);
-        Plotly.addTraces(M0V0HitChannels, { y: data.bins, marker: { color: 'black' }, type: 'bar' });
+        Plotly.addTraces(M0V0HitChannels,  {
+          x: data.binCenters, 
+          y: data.binContents, 
+          marker: { color: 'black' },
+          type: 'bar' }
+        );
 
     });
 
@@ -109,7 +124,12 @@ $(document).ready(function() {
     socket.on('hit channels M0 V1', function(data) {
 
         Plotly.deleteTraces(M0V1HitChannels, 0);
-        Plotly.addTraces(M0V1HitChannels, { y: data.bins, marker: { color: 'black' }, type: 'bar' });
+        Plotly.addTraces(M0V1HitChannels, {
+          x: data.binCenters, 
+          y: data.binContents, 
+          marker: { color: 'black' },
+          type: 'bar' }
+        );
 
     });
 
@@ -129,7 +149,12 @@ $(document).ready(function() {
     socket.on('hit channels M1 U0', function(data) {
 
         Plotly.deleteTraces(M1U0HitChannels, 0);
-        Plotly.addTraces(M1U0HitChannels, { y: data.bins, marker: { color: 'black' }, type: 'bar' });
+        Plotly.addTraces(M1U0HitChannels, {
+          x: data.binCenters, 
+          y: data.binContents, 
+          marker: { color: 'black' },
+          type: 'bar' }
+        );
 
     });
 
@@ -149,7 +174,12 @@ $(document).ready(function() {
     socket.on('hit channels M1 U1', function(data) {
 
         Plotly.deleteTraces(M1U1HitChannels, 0);
-        Plotly.addTraces(M1U1HitChannels, { y: data.bins, marker: { color: 'black' }, type: 'bar' });
+        Plotly.addTraces(M1U1HitChannels, {
+          x: data.binCenters, 
+          y: data.binContents, 
+          marker: { color: 'black' },
+          type: 'bar' }
+        );
 
     });
 
@@ -170,7 +200,12 @@ $(document).ready(function() {
     socket.on('hit channels M1 V0', function(data) {
 
         Plotly.deleteTraces(M1V0HitChannels, 0);
-        Plotly.addTraces(M1V0HitChannels, { y: data.bins, marker: { color: 'black' }, type: 'bar' });
+        Plotly.addTraces(M1V0HitChannels, {
+          x: data.binCenters, 
+          y: data.binContents, 
+          marker: { color: 'black' },
+          type: 'bar' }
+        );
 
     });
 
@@ -191,7 +226,12 @@ $(document).ready(function() {
     socket.on('hit channels M1 V1', function(data) {
 
         Plotly.deleteTraces(M1V1HitChannels, 0);
-        Plotly.addTraces(M1V1HitChannels, { y: data.bins, marker: { color: 'black' }, type: 'bar' });
+        Plotly.addTraces(M1V1HitChannels, {
+          x: data.binCenters, 
+          y: data.binContents, 
+          marker: { color: 'black' },
+          type: 'bar' }
+        );
 
     });
 

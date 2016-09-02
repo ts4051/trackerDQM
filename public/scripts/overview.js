@@ -78,7 +78,6 @@ $(document).ready(function() {
     });
 
 
-
     //
     // Update loop
     //
