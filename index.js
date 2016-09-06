@@ -118,6 +118,9 @@ subSock.subscribe('');
 var eventNumsDeque = new Deque();
 var unpackingSuccessDeque = new Deque();
 var numUnpackingErrorsDeque = new Deque();
+var amc13TriggerNumberDeque = new Deque();
+var amc13EventSizeDeque = new Deque();
+var numDigitsDeque = new Deque();
 
 var unpackingData = null;
 
@@ -135,6 +138,9 @@ function handleUnpackerInfoMessage(messageInfo) {
       unpackingSuccessDeque.clear();
       eventNumsDeque.clear();
       numUnpackingErrorsDeque.clear();
+      amc13TriggerNumberDeque.clear();
+      amc13EventSizeDeque.clear();
+      numDigitsDeque.clear();
     }
 
     // let all clients know current event and run number //TODO Move to something generic
@@ -144,6 +150,9 @@ function handleUnpackerInfoMessage(messageInfo) {
     //Unpack message
     var unpackingSuccess = messageInfo.data.readUInt32LE(0);
     var numUnpackingErrors = messageInfo.data.readUInt32LE(4); //Each unsigned int is 4 bits
+    var amc13TriggerNumber = messageInfo.data.readUInt32LE(8); 
+    var amc13EventSize = messageInfo.data.readUInt32LE(12); 
+    var numDigits = messageInfo.data.readUInt32LE(16); 
 
     //Update deques (using deque to only keep most recent N events, otherwise memory usage increases over time)
     eventNumsDeque.push(messageInfo.event);
@@ -161,11 +170,29 @@ function handleUnpackerInfoMessage(messageInfo) {
         numUnpackingErrorsDeque.shift();
     }
 
+    amc13TriggerNumberDeque.push(amc13TriggerNumber);
+    if (amc13TriggerNumberDeque.length > historyLength) {
+        amc13TriggerNumberDeque.shift();
+    }
+
+    amc13EventSizeDeque.push(amc13EventSize);
+    if (amc13EventSizeDeque.length > historyLength) {
+        amc13EventSizeDeque.shift();
+    }
+
+    numDigitsDeque.push(numDigits);
+    if (numDigitsDeque.length > historyLength) {
+        numDigitsDeque.shift();
+    }
+
     //Fill data struct
     unpackingData = {
       eventNums: eventNumsDeque.toArray(),
       unpackingSuccessVals: unpackingSuccessDeque.toArray(),
-      numUnpackingErrors: numUnpackingErrorsDeque.toArray()
+      numUnpackingErrors: numUnpackingErrorsDeque.toArray(),
+      amc13TriggerNumbers: amc13TriggerNumberDeque.toArray(),
+      amc13EventSizes: amc13EventSizeDeque.toArray(),
+      numDigitsVals: numDigitsDeque.toArray()
     }
 
 }
